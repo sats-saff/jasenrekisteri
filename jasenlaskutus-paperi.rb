@@ -1,6 +1,15 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
+#
+# Luo HTML-tiedoston, josta voi tulostaa paperiset jäsenmaksulaskut.
+#
+# Lue skripti läpi ja tarkista toimintalogiikka!!!
+#
+# Käyttö:
+#    ./jasenlaskutus-paperi.rb <paperilasku.erb> <output.html>
+#
+
 require 'date'
 require_relative 'settings.rb'
 require_relative 'userdatabase.rb'

@@ -1,6 +1,16 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
+#
+# Lähettää jäsenlaskut sähköpostilla.
+#
+# Lue skripti läpi ja tarkista toimintalogiikka!!!
+#
+# Käyttö:
+#    ./jasenlaskutus-email.rb
+#
+
+
 require 'date'
 require_relative 'settings.rb'
 require_relative 'userdatabase.rb'
