@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      @page { 
+        /*
+          A4 = 210 x 297 mm
+          A5 = 210 x 148 mm
+          C5 = 229 x 162 mm  (19 x 14 mm ylimääräistä)
+        */
+        
+        size: A4 portrait;
+        margin: 0;
+        padding: 15mm;
+      }
+
+      @media print {
+        .page {
+          /* Without any border Chrome prints pages on top of one another */
+          border: 1px solid white;
+        }
+      }
+      @media screen {
+        .page {
+          border: 1px solid black;
+        }
+      }
+
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        font-size: 11pt;
+      }
+      .page {
+        position: relative;
+        width: 210mm;
+        height: 297mm;
+      }
+      .page + .page {
+        page-break-before: always;
+      }
+      
+      .address {
+/*        border: 1px solid black; */
+        position: absolute;
+        top: 20mm;
+        left: 20mm;
+        width: 90mm;
+        height: 60mm;
+      }
+      .recipient {
+        margin: 10mm;
+      }
+      .sender {
+        margin: 10mm;
+        font-size: smaller;
+      }
+
+      .rightpane {
+/*        border: 1px solid #fee; */
+        position: absolute;
+        top: 20mm;
+        left: 110mm;
+        right: 20mm;
+      }
+      .rightheader {
+      }
+      .rightheader {
+        display: block;
+        height: 20mm;
+        line-height: 20mm;
+        vertical-align: middle;
+        font-weight: bold;
+        margin-bottom: 5mm;
+      }
+      .rightheader .logo {
+        display: inline-block;
+        float: left;
+        width: 20mm;
+        height: 20mm;
+        margin-right: 5mm;
+      }
+
+      .content {
+        margin: 20mm;
+        margin-top: 90mm;
+      }
+
+      td {
+        vertical-align: top;
+        padding-right: 2mm;
+      }
+
+      .lasku {
+        margin: 10mm;
+      }
+      .lasku th {
+        font-weight: bold;
+        text-align: left;
+        padding-right: 10mm;
+        vertical-align: top;
+      }
+      .lasku td {
+        vertical-align: top;
+      }
+
+      .indent {
+        padding: 0 1cm;
+      }
+
+      .footer {
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 4cm;
+        padding: 1mm 2cm 0;
+        border-top: 1pt solid black;
+      }
+      .footer td {
+        width: 10cm;
+      }
+
+      .note {
+        font-size: smaller;
+      }
+      
+    </style>
+  </head>
+  <body>
+
+  <% for @user in @users %>
+
+
+    <div class="page">
+      <div class="address">
+	<div class="recipient">
+	  <%= @user[:nimi] %><br>
+	  <%= @user[:osoite1] %><br>
+	  <% if @user[:osoite2] %> <%= @user[:osoite2] %><br> <% end %>
+	  <%= @user[:postinro] %> <%= @user[:postitmi] %>
+	  <% if @user[:maa] %> <br> <%= @user[:maa] %><br> <% end %>
+	</div>
+	<div class="sender">
+	  Lähettäjä:<br>
+	  Suomen avaruustutkimusseura ry<br>
+	  PL 609<br>
+	  00101 Helsinki
+	</div>
+      </div>
+
+
+      <div class="rightpane">
+	<div class="rightheader">
+	  <img src="sats/logo.png" class="logo">
+	  JÄSENLASKU
+	</div>
+	<table>
+	  <tr>
+	    <td>Vuosi</td>
+	    <td><%= @user[:jmaksu_vuosi] %></td>
+	  </tr>
+	  <tr>
+	    <td>Laskun pvm</td>
+	    <td><%= @user[:laskupv] %></td>
+	  </tr>
+	  <tr>
+	    <td>Laskuttaja</td>
+	    <td>
+	      Sampo Niskanen<br>
+	      Jäsenvastaava<br>
+	      sampo.niskanen@iki.fi<br>
+	      040-8205291
+	    </td>
+	  </tr>
+	</table>
+      </div>
+
+      <div class="content">
+	<p>Tässä on Suomen avaruustutkimusseura ry:n vuoden <%= @user[:jmaksu_vuosi] %>
+	jäsenmaksulasku.  Tarkista samalla yhteystietosi.  Ilmoita muuttuneet
+	yhteystiedot jäsenvastaavalle.</p>
+	
+	<% if !@user[:email] %>
+	<p><strong>Ole hyvä ja ilmoita sähköpostiosoitteesi
+	jäsenvastaavalle (sampo.niskanen@iki.fi).</strong><br>
+	Tämä vähentää johtokunnan työtä ja seuran postituskustannuksia.</p>
+	<% end %>
+
+	<p>Jos olet mielestäsi jo maksanut tämän vuoden
+	jäsenmaksun tai laskussa on muuta epäselvyyttä, ole hyvä ja
+	ota yhteyttä jäsenvastaavaan.</p>
+	
+	<table class="lasku">
+	  <tr>
+	    <th>Postiosoite:</th>
+	    <td><%= @user[:nimi] %><br>
+	  	<%= @user[:osoite1] %><br>
+	  	<% if @user[:osoite2] %> <%= @user[:osoite2] %><br> <% end %>
+	  	<%= @user[:postinro] %> <%= @user[:postitmi] %>
+	  	<% if @user[:maa] %> <br> <%= @user[:maa] %><br> <% end %>
+	    </td>
+	  </tr>
+	  <tr>
+	    <th>Sähköpostiosoite:</th>
+	    <td><%= @user[:email] ? @user[:email] : "Ei tiedossa" %></td>
+	  </tr>
+
+	  <tr><td>&nbsp;</td></tr>
+
+	  <tr>
+	    <th>Jäsenluokka:</th>
+	    <td><%= @user[:jasenluokka] %></td>
+	  </tr>
+	  <tr>
+	    <th>Jäsenmaksu:</th>
+	    <td><%= @user[:jasenmaksu] %> € &nbsp;&nbsp;&nbsp; <span class="note">(ALV 0%)</span></td>
+	  </tr>
+	  <tr>
+	    <th>Saaja:</th>
+	    <td>Suomen avaruustutkimusseura ry</td>
+	  </tr>
+	  <tr>
+	    <th>Tilinumero:</th>
+	    <td>FI81 2185 1800 1292 32</td>
+	  </tr>
+	  <tr>
+	    <th>BIC/SWIFT:</th>
+	    <td>NDEAFIHH</td>
+	  </tr>
+	  <tr>
+	    <th>Viitenumero:</th>
+	    <td><%= @user[:viitenro] %></td>
+	  </tr>
+	  <tr>
+	    <th>Eräpäivä:</th>
+	    <td><%= @user[:erapv] %></td>
+	  </tr>
+	</table>
+
+	<p>Ole hyvä ja käytä viitenumeroa maksaessasi.</p>
+
+      </div>
+
+      <table class="footer">
+	<tr>
+	  <td>
+	     Suomen avaruustutkimusseura ry<br>
+	     PL 507<br>
+	     00101 Helsinki<br>
+	     http://www.sats-saff.fi/
+	  </td>
+	  <td>
+	    Jäsenvastaava:<br>
+	    Sampo Niskanen<br>
+	    sampo.niskanen@iki.fi<br>
+	    040-8205291
+	  </td>
+	</tr>
+      </table>
+
+    </div>
+
+  <% end %>
+
+
+  </body>
+</html>
+

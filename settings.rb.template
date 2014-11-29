@@ -1,0 +1,11 @@
+# Document ID to read from, provided in the URL
+# https://docs.google.com/spreadsheet/ccc?key=<DOCUMENT_ID>
+ENV['DOCUMENT_ID'] = "abcdef"
+
+# Google account username
+ENV['GOOGLE_USERNAME'] = "user@example.com"
+
+# Not recommended:
+#ENV['GOOGLE_PASSWORD'] = "secret"
+
+
