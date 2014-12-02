@@ -72,7 +72,7 @@ laskupv = "#{laskupv.day}.#{laskupv.month}.#{laskupv.year}"
 
 # Eräpäivä on 2 viikon päästä seuraava maanantai
 erapv = Time.now + 14*24*60*60
-while !erapv.monday?
+while erapv.saturday? or erapv.sunday?
   erapv += 24*60*60
 end
 erapv = "#{erapv.day}.#{erapv.month}.#{erapv.year}"
