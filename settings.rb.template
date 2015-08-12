@@ -1,11 +1,15 @@
+
+# Create a client ID and secret according to
+# https://developers.google.com/drive/web/auth/web-server
+CLIENT_ID = "..."
+CLIENT_SECRET = "..."
+
+# After setting CLIENT_ID and CLIENT_SECRET, run ./create-access-token.rb
+# and save the resulting access token here:
+CLIENT_ACCESS_TOKEN = "..."
+
 # Document ID to read from, provided in the URL
 # https://docs.google.com/spreadsheet/ccc?key=<DOCUMENT_ID>
-ENV['DOCUMENT_ID'] = "abcdef"
-
-# Google account username
-ENV['GOOGLE_USERNAME'] = "user@example.com"
-
-# Not recommended:
-#ENV['GOOGLE_PASSWORD'] = "secret"
+DOCUMENT_ID = "..."
 
 

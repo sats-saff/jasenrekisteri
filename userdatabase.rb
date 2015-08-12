@@ -1,14 +1,6 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
-# Prompts user for username and password (alternatively provided in
-# GOOGLE_USERNAME and GOOGLE_PASSWORD environment variables),
-# and reads the user database into the variable 'users'.
-
-
-# Document ID to read from, provided in the URL
-# https://docs.google.com/spreadsheet/ccc?key=<DOCUMENT_ID>
-#DOCUMENT_ID = "abcdef"
 
 # Column name for user ID
 USER_ID_COLUMN = "jasennro"
@@ -26,20 +18,16 @@ RESIGNED_DATE_COLUMN = "eroamispvm"
 require "rubygems"
 require "google_drive"
 require 'pp'
-require "highline/import"
-$terminal = HighLine.new($stdin, $stderr)
 
 class UserDatabase
 
   attr_reader :worksheet, :users, :header
 
-  def initialize(username = nil, password = nil, document_id = nil)
-    @username = username || ENV['GOOGLE_USERNAME'] || ask("Google username:  ")
-    @password = password || ENV['GOOGLE_PASSWORD'] || ask("Google password:  ") { |q| q.echo = false }
+  def initialize(document_id = nil, access_token = nil)
     @document_id = document_id || ENV['DOCUMENT_ID'] || DOCUMENT_ID
 
     # Logs in.
-    @session = GoogleDrive.login(@username, @password)
+    @session = GoogleDrive.login_with_oauth(access_token || ENV['ACCESS_TOKEN'] || CLIENT_ACCESS_TOKEN)
 
     # Get first worksheet of document
     @worksheet = @session.spreadsheet_by_key(@document_id).worksheets[0]
