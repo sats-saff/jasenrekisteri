@@ -7,162 +7,146 @@
 # Lue skripti läpi ja tarkista toimintalogiikka!!!
 #
 # Käyttö:
-#    ./jasenlaskutus-email.rb
+#    ./jasenlaskutus-email.rb <email.erb> [emails...]
 #
 
 
 require 'date'
+require 'highline/import'
 require_relative 'settings.rb'
 require_relative 'userdatabase.rb'
 
 require_relative 'helpers.rb'
 
-JASENLUOKAT = {
-  "V" => "Varsinainen jäsen",
-  "O" => "Opiskelijajäsen",
-  "N" => "Nuorisojäsen (alle 18v)",
-  "J" => "Juniorijäsen (alle 15v)"
-}
-JASENMAKSUT = {
-  "V" => 28,
-  "O" => 14,
-  "N" => 14,
-  "J" => 10
-}
+
+LIMIT_EMAILS = ARGV.clone
+LIMIT_EMAILS.shift
 
 
-puts "Provide Kapsi password to send emails or empty to print messages."
+
+# Yhteiset osat sähköposti + paperilaskuille:
+require_relative 'jasenlaskutus-common-variables'
+
+
+# Select which users to include.  Return true to include the user.
+def include_user(user)
+
+  # Komentorivillä mainitut käyttäjät
+  return false unless LIMIT_EMAILS.empty? || LIMIT_EMAILS.include?(user.email)
+
+  # Hylkää käyttäjät, jotka eivät maksa henkilöjäsenmaksua
+  return false if not JASENLUOKAT[user["jasenluokka"]]
+
+  # Hylkää käyttäjät, joilla ei ole sähköpostiosoitetta
+  return false if (user.email == nil)
+
+  # Poista käyttäjät jotka ovat maksaneet
+  maksanut = (user.maksanut?(CURRENT_YEAR) || user.maksanut?(CURRENT_YEAR+1))
+  puts "On jo maksanut: #{user.nimi}" if maksanut
+  return false if maksanut
+
+  return true
+end
+
+
+# Return a string to set to the "sent" status.  nil for setting nothing.
+def mark_sent(user)
+  return "email #{LASKUPV}"
+end
+
+
+#############################################################################
+
+
+if ARGV.length < 1
+  puts "Usage:"
+  puts "  #{$0} <email.erb> [emails...]"
+  exit 1
+end
+
+INPUT = ARGV[0]
+TEMPLATE = IO.read(INPUT)
+
+puts "Provide Kapsi password to send emails (or empty to print messages to stdout)."
 email_password = ask("Kapsi password:  ") { |q| q.echo = false }
 TEST = (email_password == "")
+
+
+
+class UserErb
+  include ERB::Util
+  attr_accessor :user, :template
+
+  def initialize(template)
+    @user = {}
+    @template = template
+  end
+
+  def render()
+    ERB.new(@template).result(binding)
+  end
+end
 
 
 db = UserDatabase.new
 
 if !TEST
   require 'mail'
-  options = { :address              => "mail.kapsi.fi",
+  options = {
+            :address              => "mail.kapsi.fi",
 	    :port                 => 587,
 	    :domain               => 'kapsi.fi',
 	    :user_name            => 'sats',
 	    :password             => email_password,
-	    :authentication       => 'plain',
-	    :enable_starttls_auto => true  }
+	    :authentication       => 'login',
+	    :enable_starttls_auto => true 
+  }
   Mail.defaults do
     delivery_method :smtp, options
   end
 end
 
+count = 0
 db.users.each do |user|
 
-#  next unless user["sahkoposti"] == "valtteri.maja@gmail.com" || user["sahkoposti"] == "timo.toivanen@iki.fi"
+  next if not include_user(user)
 
-
-  # Valitse vain henkilöjäsenet
-  jasenluokka = JASENLUOKAT[user["jasenluokka"]]
-  jasenmaksu = JASENMAKSUT[user["jasenluokka"]]
-  puts "Jasenluokka puuttuu: #{user["sukunimi"]}" unless jasenluokka  
-  next unless jasenluokka
-
-  # Vain käyttäjät joilla on sähköpostiosoite
-  email = user["sahkoposti"]
-  puts "Sähköposti puuttuu: #{user["sukunimi"]}" unless email != ""
-  next unless email != ""
-
-  # Poista käyttäjät jotka ovat maksaneet
-  puts "On jo maksanut: #{user["sukunimi"]}" if user["2014:maksanut"] != ""
-  next if user["2014:maksanut"] != ""
-
-  # Select proper name (first+last or last)
-  etunimi = user["etunimi"]
-  sukunimi = user["sukunimi"]
-  osoite1 = user["osoite1"]
-  osoite2 = user["osoite2"]
-  postinro = user["postinro"]
-  postitmi = user["postitoimipaikka"]
-  maa = user["maa"]
-
-  # Luo viitenumero
-  viitenro = viitenumero(user["jasennro"].to_i * 10000 + 2014)
-
+  u = generate_variables(user)
+  erb = UserErb.new(TEMPLATE)
+  erb.user = u
+  
+  
   # Generate email
-  email_subject = "SATS jäsenmaksu 2014"
-  email_from = "sats@kapsi.fi"
-  email_to = email
-  msg = <<-eos
-
-Hei,
-
-Tässä on Suomen avaruustutkimusseura ry:n vuoden 2014 jäsenmaksulasku.  Ole hyvä ja maksa lasku alla olevien tietojen mukaan.
-
-Jos olet mielestäsi jo maksanut tämän vuoden jäsenmaksun tai laskussa on muuta epäselvyyttä, ole hyvä ja ota yhteyttä.
-
-Tarkista samalla yhteystietosi.  Voit ilmoittaa muuttuneista yhteystiedoista vastaamalla tähän viestiin.
-
-eos
-
-  if (user["rakettistatus"] != "") && (user["rakettistatus"] != "J")
-    msg += <<-eos
-HUOM!  Rakettikortit postitetaan ainoastaan jäsenille, jotka ovat maksaneet jäsenmaksun.
-
-eos
-  end
-
-  msg += <<-eos
-
-Jäsenluokka:  #{jasenluokka}
-Jäsenmaksu:   #{jasenmaksu} €  (ALV 0%)
-Saaja:        Suomen avaruustutkimusseura ry
-Tilinumero:   FI81 2185 1800 1292 32
-BIC/SWIFT:    NDEAFIHH
-Viimenumero:  #{viitenro}
-Eräpäivä:     3.10.2014
-
-
-
-Yhteystietosi jäsenrekisterissä:
-
-Postiosoite:
-  #{sukunimi}
-  #{osoite1}#{"\n  #{osoite2}" if osoite2 != ""}
-  #{postinro} #{postitmi}
-  #{maa}
-
-Sähköpostiosoite:
-  #{email}
-
-
-Ystävällisin terveisin,
-
-  Suomen avaruustutkimusseura ry
-  Sällskapet för Astronautisk Forskning i Finland rf
-  http://www.sats-saff.fi/
-
-eos
-
-  if user["2014:laskutettu"] != ""
-    puts "Lasku on jo lähetetty käyttäjälle #{email}: #{user["2014:laskutettu"]}"
-    puts "Lähetänkö uudestaan (y/N)?"
-    next unless gets.start_with?("y")
-  end
-
-
+  email_subject = "SATS jäsenmaksu #{CURRENT_YEAR}"
+  email_from = "Suomen avaruustutkimusseura ry <sats@kapsi.fi>"
+  email_to = "#{u[:nimi]} <#{u[:email]}>"
+  email_msg = erb.render
+  
+  
   if TEST
     puts "--------------------------------------------------------------------------"
-    puts "To: #{email}"
+    puts "To: #{email_to}"
     puts "Subject: #{email_subject}"
     puts "From: #{email_from}"
-    puts msg
+    puts email_msg
   else
-    puts "Sending to #{email}..."
+    puts "Sending to #{email_to}..."
     Mail.deliver do
-           to email
+           to email_to
          from email_from
       subject email_subject
-         body msg
+         body email_msg
     end
-    user["2014:laskutettu"] = "email #{DateTime.now.strftime("%Y-%m-%d")}"
-    db.save
+    
+    txt = mark_sent(user)
+    if txt
+      user["#{CURRENT_YEAR}:laskutettu"] = txt
+      db.save
+    end
   end
-
+  
+  count += 1
 end
+
+puts "Processed #{count} bills"
 

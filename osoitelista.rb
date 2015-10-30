@@ -29,7 +29,11 @@ db.users.each do |user|
   postitmi = user.csv("postitoimipaikka")
 
   # Generate CSV line
-  line = "#{nimi},#{osoite1},#{osoite2},#{postinro} #{postitmi}"
+  if osoite2 && osoite2.length > 0
+    line = "#{nimi},#{osoite1},#{osoite2},#{postinro} #{postitmi}"
+  else
+    line = "#{nimi},#{osoite1},#{postinro} #{postitmi},"
+  end
   puts line
 
 end

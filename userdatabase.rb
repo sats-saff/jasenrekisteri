@@ -1,6 +1,45 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
+require "rubygems"
+require "google_drive"
+require 'pp'
+
+ACCESS_TOKEN_FILE = 'access-token.txt'
+
+def get_access_token
+  begin
+    # Read cached access token + test access token for validity
+    access_token = File.read(ACCESS_TOKEN_FILE)
+    session = GoogleDrive.login_with_oauth(access_token)
+    session.spreadsheet_by_key(DOCUMENT_ID)
+  rescue
+  
+    # Authorizes with OAuth and gets an access token.
+    client = Google::APIClient.new
+    auth = client.authorization
+    auth.client_id = CLIENT_ID
+    auth.client_secret = CLIENT_SECRET
+    auth.scope = [
+      "https://www.googleapis.com/auth/drive",
+      "https://spreadsheets.google.com/feeds/"
+    ]
+    auth.redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
+    print("1. Open this page:\n%s\n\n" % auth.authorization_uri)
+    print("2. Enter the authorization code shown in the page: ")
+    auth.code = $stdin.gets.chomp
+    auth.fetch_access_token!
+    access_token = auth.access_token
+
+    File.open(ACCESS_TOKEN_FILE, 'w') do |file|
+      file.write(access_token)
+    end
+  end
+  return access_token
+end
+
+CLIENT_ACCESS_TOKEN = get_access_token
+
 
 # Column name for user ID
 USER_ID_COLUMN = "jasennro"
@@ -15,10 +54,6 @@ RESIGNED_DATE_COLUMN = "eroamispvm"
 
 
 
-require "rubygems"
-require "google_drive"
-require 'pp'
-
 class UserDatabase
 
   attr_reader :worksheet, :users, :header
@@ -28,6 +63,8 @@ class UserDatabase
 
     # Logs in.
     @session = GoogleDrive.login_with_oauth(access_token || ENV['ACCESS_TOKEN'] || CLIENT_ACCESS_TOKEN)
+
+
 
     # Get first worksheet of document
     @worksheet = @session.spreadsheet_by_key(@document_id).worksheets[0]
@@ -94,6 +131,29 @@ class User
       self["etunimi"]
     end
   end
+  
+  def email
+    email = self["sahkoposti"].strip
+    email = nil if email == ""
+    email
+  end
+  
+  def rakettikortillinen?
+    ["R1", "R2", "RM"].include? self["rakettistatus"]
+  end
+  
+  # True jos on joku maksanut kyseisen vuoden jäsenmaksun.
+  def maksanut?(year)
+    self["#{year}:maksanut"] != ""
+  end
+  
+  # True jos henkilön pitäisi maksaa kyseisen vuoden jäsenmaksu (eli on liittynyt
+  # ennen ko. vuoden 1.10.)
+  def maksaa?(year)
+    limit = "#{year}-10-01"
+    self["liittymispvm"] < limit
+  end
 
 end
+
 

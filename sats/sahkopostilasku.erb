@@ -1,0 +1,48 @@
+
+Hei,
+
+Tässä on Suomen avaruustutkimusseura ry:n vuoden <%= @user[:jmaksu_vuosi] %> jäsenmaksulasku. <% if @user[:edellisvuosi_maksamatta] %>Tietojemme mukaan myös edellisvuoden jäsenmaksusi on maksamatta.<% end %> Ole hyvä ja maksa lasku alla olevien tietojen mukaan.
+
+Tarkista samalla yhteystietosi.  Voit ilmoittaa muuttuneista yhteystiedoista vastaamalla tähän viestiin.
+
+Jos olet mielestäsi jo maksanut tämän vuoden jäsenmaksun tai laskussa on muuta epäselvyyttä, ole hyvä ja ota yhteyttä.
+
+
+
+Yhteystietosi jäsenrekisterissä:
+
+Postiosoite:
+  <%= @user[:nimi] %>
+  <%= @user[:osoite1] %><% if @user[:osoite2] %>
+  <%= @user[:osoite2] %><% end %>
+  <%= @user[:postinro] %> <%= @user[:postitmi] %><% if @user[:maa] %>
+  <%= @user[:maa] %><% end %>
+
+Sähköpostiosoite:
+  <%= @user[:email] %>
+
+Jäsenluokka:
+  <%= @user[:jasenluokka] %>
+
+
+
+Jäsenmaksulasku:
+<% for @maksu in @user[:laskutettava] %>
+  <%= @maksu[:laskutettava] %> (ALV 0%)    <%= @maksu[:summa] %><% end %>
+
+  Maksettava yhteensä:  <%= @user[:laskutettava_yhteensa] %> €
+
+  Saaja:        Suomen avaruustutkimusseura ry
+  Tilinumero:   FI81 2185 1800 1292 32
+  BIC/SWIFT:    NDEAFIHH
+  Viimenumero:  <%= @user[:viitenro] %>
+  Eräpäivä:     <%= @user[:erapv] %>
+
+
+
+Ystävällisin terveisin,
+
+  Suomen avaruustutkimusseura ry
+  Sällskapet för Astronautisk Forskning i Finland rf
+  http://www.sats-saff.fi/
+

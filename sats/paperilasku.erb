@@ -47,30 +47,57 @@
         page-break-before: always;
       }
       
+      /* Ohjeistus: http://www.posti.fi/liitteet-yrityksille/ohjeet/konelajiteltavien-suunnitteluopas.pdf */
+      /*
+       * C5-isoikkunakuori jossa A4 sisällä:
+       * Lähettäjä ei saa olla alempana kuin 28mm sivun yläreunasta
+       * Vastaanottajan täytyy olla vähintään 40mm sivun yläreunasta
+       */
       .address {
-/*        border: 1px solid black; */
+        /*
+        border: 1px solid black;
         position: absolute;
         top: 10mm;
         left: 20mm;
         width: 90mm;
         height: 60mm;
+        */
       }
       .recipient {
-        margin: 10mm;
+        /* border: 1px solid black; */
+        position: absolute;
+        top: 40mm;
+        left: 20mm;
+        width: 90mm;
+        height: 20mm;
       }
       .sender {
-        margin: 10mm;
+        /* border: 1px solid black; */
+        position: absolute;
+        top: 15mm;
+        height: 13mm;
+        left: 20mm;
+        width: 90mm;
+        overflow: hidden;
         font-size: smaller;
+      }
+      .address .logo {
+        display: inline-block;
+        float: left;
+        width: 11mm;
+        height: 11mm;
+        margin-right: 2mm;
       }
 
       .rightpane {
 /*        border: 1px solid #fee; */
         position: absolute;
-        top: 20mm;
+        top: 15mm;
         left: 110mm;
         right: 20mm;
       }
-      .rightheader {
+      .rightpane p:first-child {
+        margin-top: 0;
       }
       .rightheader {
         display: block;
@@ -90,7 +117,7 @@
 
       .content {
         margin: 20mm;
-        margin-top: 90mm;
+        margin-top: 75mm;  /* Aina ikkunakuoren alapuolella */
       }
 
       td {
@@ -99,10 +126,15 @@
       }
 
       .lasku {
-        margin: 10mm;
+        margin: 6.5mm 10mm;
+      }
+      .lasku caption {
+        text-align: left;
+        margin: 1em 0;
+        font-weight: bold;
       }
       .lasku th {
-        font-weight: bold;
+        font-weight: normal;
         text-align: left;
         padding-right: 10mm;
         vertical-align: top;
@@ -139,30 +171,27 @@
 
   <% for @user in @users %>
 
-
     <div class="page">
       <div class="address">
+	<div class="sender">
+	  <img src="sats/logo.png" class="logo">
+	  Suomen avaruustutkimusseura ry<br>
+	  PL 507<br>
+	  00101 Helsinki
+	</div>
 	<div class="recipient">
 	  <%= @user[:nimi] %><br>
 	  <%= @user[:osoite1] %><br>
 	  <% if @user[:osoite2] %> <%= @user[:osoite2] %><br> <% end %>
-	  <%= @user[:postinro] %> <%= @user[:postitmi] %>
+	  <%= @user[:postinro] %> <%= @user[:postitmi].upcase %>
 	  <% if @user[:maa] %> <br> <%= @user[:maa] %><br> <% end %>
-	</div>
-	<div class="sender">
-	  Lähettäjä:<br>
-	  Suomen avaruustutkimusseura ry<br>
-	  PL 507<br>
-	  00101 Helsinki
 	</div>
       </div>
 
 
       <div class="rightpane">
-	<div class="rightheader">
-	  <img src="sats/logo.png" class="logo">
-	  JÄSENLASKU
-	</div>
+	<p><b>JÄSENMAKSULASKU</b></p>
+
 	<table>
 	  <tr>
 	    <td>Vuosi</td>
@@ -186,12 +215,13 @@
 
       <div class="content">
 	<p>Tässä on Suomen avaruustutkimusseura ry:n vuoden <%= @user[:jmaksu_vuosi] %>
-	jäsenmaksulasku.  Tarkista samalla yhteystietosi.  Ilmoita muuttuneet
+	jäsenmaksulasku.  <% if @user[:edellisvuosi_maksamatta] %>Tietojemme mukaan myös edellisvuoden
+	jäsenmaksusi on maksamatta.<% end %>  Tarkista samalla yhteystietosi.  Ilmoita muuttuneet
 	yhteystiedot jäsenvastaavalle.</p>
 	
 	<% if !@user[:email] %>
 	<p><strong>Ole hyvä ja ilmoita sähköpostiosoitteesi
-	jäsenvastaavalle (sampo.niskanen@iki.fi).</strong><br>
+	jäsenvastaavalle (sampo.niskanen@iki.fi)</strong> mikäli sinulla on sellainen.
 	Tämä vähentää johtokunnan työtä ja seuran postituskustannuksia.</p>
 	<% end %>
 
@@ -199,7 +229,9 @@
 	jäsenmaksun tai laskussa on muuta epäselvyyttä, ole hyvä ja
 	ota yhteyttä jäsenvastaavaan.</p>
 	
+	
 	<table class="lasku">
+	  <caption>Jäsenyystiedot</caption>
 	  <tr>
 	    <th>Postiosoite:</th>
 	    <td><%= @user[:nimi] %><br>
@@ -213,17 +245,27 @@
 	    <th>Sähköpostiosoite:</th>
 	    <td><%= @user[:email] ? @user[:email] : "Ei tiedossa" %></td>
 	  </tr>
-
-	  <tr><td>&nbsp;</td></tr>
-
 	  <tr>
 	    <th>Jäsenluokka:</th>
 	    <td><%= @user[:jasenluokka] %></td>
 	  </tr>
+	</table>
+	
+	<table class="lasku">
+	  <caption>Jäsenmaksulasku</caption>
+	  <% for @maksu in @user[:laskutettava] %>
+	    <tr>
+	      <td><%= @maksu[:laskutettava] %> <span class="note">(ALV 0%)</span></td>
+	      <td><%= @maksu[:summa] %></td>
+	    </tr>
+	  <% end %>
 	  <tr>
-	    <th>Jäsenmaksu:</th>
-	    <td><%= @user[:jasenmaksu] %> € &nbsp;&nbsp;&nbsp; <span class="note">(ALV 0%)</span></td>
+	    <th>Maksettava yhteensä:</th>
+	    <td><b><%= @user[:laskutettava_yhteensa] %> €</b></td>
 	  </tr>
+	</table>
+	
+	<table class="lasku">
 	  <tr>
 	    <th>Saaja:</th>
 	    <td>Suomen avaruustutkimusseura ry</td>
