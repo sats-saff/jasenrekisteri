@@ -26,7 +26,7 @@ db.users.each do |user|
   osoite1 = user.csv("osoite1")
   osoite2 = user.csv("osoite2")
   postinro = user.csv("postinro")
-  postitmi = user.csv("postitoimipaikka")
+  postitmi = user.csv("postitoimipaikka").upcase
 
   # Generate CSV line
   if osoite2 && osoite2.length > 0
