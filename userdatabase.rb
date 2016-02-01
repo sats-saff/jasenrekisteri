@@ -147,6 +147,11 @@ class User
     self["#{year}:maksanut"] != ""
   end
   
+  # True jos on joku maksanut kyseisen vuoden jäsenmaksun.
+  def laskutettu?(year)
+    self["#{year}:laskutettu"] != ""
+  end
+  
   # True jos henkilön pitäisi maksaa kyseisen vuoden jäsenmaksu (eli on liittynyt
   # ennen ko. vuoden 1.10.)
   def maksaa?(year)

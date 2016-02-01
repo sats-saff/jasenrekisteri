@@ -34,6 +34,11 @@ def include_user(user)
   # Komentorivillä mainitut käyttäjät
   return false unless LIMIT_EMAILS.empty? || LIMIT_EMAILS.include?(user.email)
 
+  # Hylkää käyttäjät, joille on jo lähetetty tänä vuonna jäsenmaksulasku
+  laskutettu = user.laskutettu?(CURRENT_YEAR)
+  puts "On jo laskutettu tänä vuonna: #{user.nimi}" if laskutettu
+  return false if laskutettu
+
   # Hylkää käyttäjät, jotka eivät maksa henkilöjäsenmaksua
   return false if not JASENLUOKAT[user["jasenluokka"]]
 
