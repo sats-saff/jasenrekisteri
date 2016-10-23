@@ -11,6 +11,13 @@
 #
 
 
+if ARGV.length < 1
+  puts "Usage:"
+  puts "  #{$0} <email.erb> [emails...]"
+  exit 1
+end
+
+
 require 'date'
 require 'highline/import'
 require_relative 'settings.rb'
@@ -40,7 +47,7 @@ def include_user(user)
   return false if laskutettu
 
   # Hylkää käyttäjät, jotka eivät maksa henkilöjäsenmaksua
-  return false if not JASENLUOKAT[user["jasenluokka"]]
+  return false if not LASKUTETAVAT_JASENLUOKAT.include?(user["jasenluokka"])
 
   # Hylkää käyttäjät, joilla ei ole sähköpostiosoitetta
   return false if (user.email == nil)
@@ -62,12 +69,6 @@ end
 
 #############################################################################
 
-
-if ARGV.length < 1
-  puts "Usage:"
-  puts "  #{$0} <email.erb> [emails...]"
-  exit 1
-end
 
 INPUT = ARGV[0]
 TEMPLATE = IO.read(INPUT)

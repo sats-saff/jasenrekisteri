@@ -190,45 +190,30 @@
 
 
       <div class="rightpane">
-	<p><b>JÄSENMAKSULASKU</b></p>
-
-	<table>
-	  <tr>
-	    <td>Vuosi</td>
-	    <td><%= @user[:jmaksu_vuosi] %></td>
-	  </tr>
-	  <tr>
-	    <td>Laskun pvm</td>
-	    <td><%= @user[:laskupv] %></td>
-	  </tr>
-	  <tr>
-	    <td>Laskuttaja</td>
-	    <td>
-	      Sampo Juustila<br>
-	      Jäsenvastaava<br>
-	      sampo.juustila@iki.fi<br>
-	      040-8205291
-	    </td>
-	  </tr>
-	</table>
+	<p><b>KOKOUSKUTSU</b></p>
+	<p><%= @user[:laskupv] %></p>
       </div>
 
       <div class="content">
-	<p>Tässä on Suomen avaruustutkimusseura ry:n vuoden <%= @user[:jmaksu_vuosi] %>
-	jäsenmaksulasku.  <% if @user[:edellisvuosi_maksamatta] %>Tietojemme mukaan myös edellisvuoden
-	jäsenmaksusi on maksamatta.<% end %>  Tarkista samalla yhteystietosi.  Ilmoita muuttuneet
-	yhteystiedot jäsenvastaavalle.</p>
+	<p>Kaikki SATS:n jäsenet ovat tervetulleita sääntömääräiseen syyskokoukseen maanantaina 14.11.2016 klo 18 alkaen.  Kokous pidetään SATS:n ja Helsinki Hacklabin kerhotilassa osoitteessa Takkatie 18, Helsinki.</p>
+
+	<p>Kokouksen aluksi esitellään <i>Children of Dead Earth</i> -avaruussimulaattoria. </p>
+
+	<p>Kokouksessa käsitellään sääntömääräisinä asioina ensi vuoden toimintasuunnitelma, talousarvio, jäsenmaksujen suuruus, johtokunnan jäsenten valinta erovuoroisten tilalle, sekä johtokunnan puheenjohtajan, kahden toiminnantarkastajan ja heidän varamiesten vaali. Lisäksi käsitellään vuoden 2015 toiminnantarkastuskertomus ja vastuuvapauden myöntäminen.</p>
+
+	<p>Paikalle pääsee hyvin julkisilla kulkuvälineillä, auton voi jättää Takkatien varteen. Tila on samassa rakennuksessa Frisbeepointin kanssa, sisäänkäynti on talon takaa. Jos et löydä paikalle, soita Hacklabin puhelimeen 044-9129922.</p>
+
+	<p>JOHTOKUNTA</p>
+	<p>&nbsp;</p>
+	<p>Tarkista samalla yhteystietosi.  Ilmoita muuttuneet
+	yhteystiedot jäsenvastaavalle (sampo.juustila@iki.fi).</p>
 	
 	<% if !@user[:email] %>
 	<p><strong>Ole hyvä ja ilmoita sähköpostiosoitteesi
-	jäsenvastaavalle (sampo.juustila@iki.fi)</strong> mikäli sinulla on sellainen.
+	jäsenvastaavalle</strong> mikäli sinulla on sellainen.
 	Tämä vähentää johtokunnan työtä ja seuran postituskustannuksia.</p>
 	<% end %>
 
-	<p>Jos olet mielestäsi jo maksanut tämän vuoden
-	jäsenmaksun tai laskussa on muuta epäselvyyttä, ole hyvä ja
-	ota yhteyttä jäsenvastaavaan.</p>
-	
 	
 	<table class="lasku">
 	  <caption>Jäsenyystiedot</caption>
@@ -250,46 +235,6 @@
 	    <td><%= @user[:jasenluokka] %></td>
 	  </tr>
 	</table>
-	
-	<table class="lasku">
-	  <caption>Jäsenmaksulasku</caption>
-	  <% for @maksu in @user[:laskutettava] %>
-	    <tr>
-	      <td><%= @maksu[:laskutettava] %> <span class="note">(ALV 0%)</span></td>
-	      <td><%= @maksu[:summa] %></td>
-	    </tr>
-	  <% end %>
-	  <tr>
-	    <th>Maksettava yhteensä:</th>
-	    <td><b><%= @user[:laskutettava_yhteensa] %> €</b></td>
-	  </tr>
-	</table>
-	
-	<table class="lasku">
-	  <tr>
-	    <th>Saaja:</th>
-	    <td>Suomen avaruustutkimusseura ry</td>
-	  </tr>
-	  <tr>
-	    <th>Tilinumero:</th>
-	    <td>FI81 2185 1800 1292 32</td>
-	  </tr>
-	  <tr>
-	    <th>BIC/SWIFT:</th>
-	    <td>NDEAFIHH</td>
-	  </tr>
-	  <tr>
-	    <th>Viitenumero:</th>
-	    <td><%= @user[:viitenro] %></td>
-	  </tr>
-	  <tr>
-	    <th>Eräpäivä:</th>
-	    <td><%= @user[:erapv] %></td>
-	  </tr>
-	</table>
-
-	<p>Ole hyvä ja käytä viitenumeroa maksaessasi.</p>
-
       </div>
 
       <table class="footer">

@@ -72,17 +72,24 @@ end
 
 
 
+LASKUTETAVAT_JASENLUOKAT = ["V","O","N","J"]
 JASENLUOKAT = {
   "V" => "Varsinainen jäsen",
   "O" => "Opiskelijajäsen",
   "N" => "Nuorisojäsen (alle 18v)",
-  "J" => "Juniorijäsen (alle 15v)"
+  "J" => "Juniorijäsen (alle 15v)",
+  "A" => "Ainaisjäsen",
+  "K" => "Kunniajäsen",
+  "Y" => "Yritys- / yhteisöjäsen"
 }
 JASENMAKSUT = {
   "V" => 28,
   "O" => 14,
   "N" => 14,
-  "J" => 10
+  "J" => 10,
+  "A" => 0,
+  "K" => 0,
+  "Y" => 280
 }
 
 CURRENT_YEAR = Time.now.year
