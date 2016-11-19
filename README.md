@@ -14,9 +14,9 @@ toivossa, että niistä voisi jollekulle muullekin olla iloa.
 Esivaatimukset
 --------------
 
-Ruby pitää olla asennettuna.  Lisäksi:
+Ruby ja Bundler pitää olla asennettuna.  Sitten:
 
-    gem install google_drive highline
+    bundle install
 
 
 Käyttö
