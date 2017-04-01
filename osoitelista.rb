@@ -5,14 +5,27 @@
 # Luo osoitelistan CSV-muodossa.
 #
 # Käyttö:
-#    ./osoitelista.rb > osoitelista.csv
+#    ./osoitelista.rb <osoitelista.csv> [sarake_nimi]
 #
+# Jos sarakkeen nimi on määritetty, siihen merkataan postitus.
+#
+
+if ARGV.length < 1 || ARGV.length > 2
+	puts "Käyttö:  ./osoitelista.rb <osoitelista.csv> [sarake_nimi]"
+	exit 1
+end
+
+OUTPUT = ARGV[0]
+COLUMN = ARGV[1]
+SENT_MARK = "P"
 
 require_relative 'settings.rb'
 require_relative 'userdatabase.rb'
 
 db = UserDatabase.new
+total = 0
 skipped = 0
+lines = ""
 db.users.each do |user|
   
   # Ignore users abroad
@@ -34,9 +47,20 @@ db.users.each do |user|
   else
     line = "#{nimi},#{osoite1},#{postinro} #{postitmi},"
   end
-  puts line
+  lines << line + "\n"
+  total += 1
+  
+  if COLUMN
+  	user[COLUMN] = SENT_MARK
+  end
 
 end
 
-$stderr.puts "#{skipped} ulkomaalaista osoitetta tiputtettu pois"
+File.open(OUTPUT, 'w') { |file| file.write(lines) }
+puts "#{total} osoitetta kirjoitettiin tiedostoon #{OUTPUT}"
+puts "#{skipped} ulkomaalaista osoitetta tiputtettu pois"
+if COLUMN
+  db.save
+  puts "Tietokantaan merkattiin #{total} lehteä lähetetyksi sarakkeeseen #{COLUMN}"
+end
 
