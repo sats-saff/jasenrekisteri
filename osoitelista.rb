@@ -41,6 +41,10 @@ db.users.each do |user|
   postinro = user.csv("postinro")
   postitmi = user.csv("postitoimipaikka").upcase
 
+  if nimi.include?("\n") || osoite1.include?("\n") || osoite2.include?("\n") || postinro.include?("\n") || postitmi.include?("\n")
+  	raise "Rivin sisältö sisältää rivinvaihdon: #{nimi}"
+  end
+
   # Generate CSV line
   if osoite2 && osoite2.length > 0
     line = "#{nimi},#{osoite1},#{osoite2},#{postinro} #{postitmi}"
