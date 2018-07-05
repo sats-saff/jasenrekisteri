@@ -12,10 +12,10 @@ def generate_variables(user)
   postinro = user["postinro"]
   postitmi = user["postitoimipaikka"]
   maa = user["maa"]
-  
+
   osoite2 = nil if osoite2 == ""
   maa = nil if maa == ""
-  
+
   # Tarkista maksetaanko kuluvan vai kuluvan ja seuraavan vuoden jäsenmaksu
   if user.maksaa?(CURRENT_YEAR)
     jmaksu_vuosi = CURRENT_YEAR
@@ -25,7 +25,7 @@ def generate_variables(user)
     jmaksu_vuosi = CURRENT_YEAR + 1
     jmaksu_vuosi_info = "#{CURRENT_YEAR} - #{CURRENT_YEAR+1}"
     juuri_liittynyt = true
-  end  
+  end
 
   # Luo viitenumero
   viitenro = viitenumero(user["jasennro"].to_i * 10000 + jmaksu_vuosi)
@@ -72,12 +72,11 @@ end
 
 
 
-LASKUTETAVAT_JASENLUOKAT = ["V","O","N","J"]
+LASKUTETAVAT_JASENLUOKAT = ["V","O","N"]
 JASENLUOKAT = {
   "V" => "Varsinainen jäsen",
   "O" => "Opiskelijajäsen",
   "N" => "Nuorisojäsen (alle 18v)",
-  "J" => "Juniorijäsen (alle 15v)",
   "A" => "Ainaisjäsen",
   "K" => "Kunniajäsen",
   "Y" => "Yritys- / yhteisöjäsen"
@@ -86,7 +85,6 @@ JASENMAKSUT = {
   "V" => 28,
   "O" => 14,
   "N" => 14,
-  "J" => 10,
   "A" => 0,
   "K" => 0,
   "Y" => 280
@@ -105,7 +103,3 @@ while not pv.monday?
   pv += 24*60*60
 end
 ERAPV = "#{pv.day}.#{pv.month}.#{pv.year}"
-
-
-
-
