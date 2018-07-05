@@ -105,7 +105,7 @@ if !TEST
 	    :user_name            => 'sats',
 	    :password             => email_password,
 	    :authentication       => 'login',
-	    :enable_starttls_auto => true 
+	    :enable_starttls_auto => true
   }
   Mail.defaults do
     delivery_method :smtp, options
@@ -120,15 +120,15 @@ db.users.each do |user|
   u = generate_variables(user)
   erb = UserErb.new(TEMPLATE)
   erb.user = u
-  
-  
+
+
   # Generate email
   email_subject = "SATS jäsenmaksu #{CURRENT_YEAR}"
   email_from = "Suomen avaruustutkimusseura ry <sats@kapsi.fi>"
   email_to = "#{u[:nimi]} <#{u[:email]}>"
   email_msg = erb.render
-  
-  
+
+
   if TEST
     puts "--------------------------------------------------------------------------"
     puts "To: #{email_to}"
@@ -143,16 +143,15 @@ db.users.each do |user|
       subject email_subject
          body email_msg
     end
-    
+
     txt = mark_sent(user)
     if txt
       user["#{CURRENT_YEAR}:laskutettu"] = txt
       db.save
     end
   end
-  
+
   count += 1
 end
 
 puts "Processed #{count} bills"
-

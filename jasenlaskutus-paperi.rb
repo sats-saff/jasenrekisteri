@@ -30,6 +30,12 @@ def include_user(user)
 
   # Hylkää käyttäjät, joilla on sähköpostiosoite
   return false if (user.email != nil)
+#  puts "On sposti #{user.nimi}" if (user.email != nil)
+
+  # Hylkää käyttäjät, joille on jo lähetetty tänä vuonna jäsenmaksulasku
+  laskutettu = user.laskutettu?(CURRENT_YEAR)
+  puts "On jo laskutettu tänä vuonna: #{user.nimi}" if laskutettu
+  return false if laskutettu
 
   # Poista käyttäjät jotka ovat maksaneet
   maksanut = (user.maksanut?(CURRENT_YEAR) || user.maksanut?(CURRENT_YEAR+1))
@@ -97,7 +103,7 @@ db.users.each do |user|
 
   u = generate_variables(user)
   userlist.users.push u
-  
+
   txt = mark_sent(user)
   if txt
     current = user["#{CURRENT_YEAR}:laskutettu"]
@@ -113,4 +119,3 @@ userlist.save(OUTPUT)
 puts "Luotiin #{userlist.users.length} laskua."
 
 db.save
-
