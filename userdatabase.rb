@@ -14,7 +14,7 @@ def get_access_token
     session = GoogleDrive.login_with_oauth(access_token)
     session.spreadsheet_by_key(DOCUMENT_ID)
   rescue
-  
+
     # Authorizes with OAuth and gets an access token.
     client = Google::APIClient.new
     auth = client.authorization
@@ -27,7 +27,7 @@ def get_access_token
     auth.redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
     print("1. Open this page:\n%s\n\n" % auth.authorization_uri)
     print("2. Enter the authorization code shown in the page: ")
-    auth.code = $stdin.gets.chomp
+    auth.code = $stdin.gets.strip
     auth.fetch_access_token!
     access_token = auth.access_token
 
@@ -131,27 +131,27 @@ class User
       self["etunimi"]
     end
   end
-  
+
   def email
     email = self["sahkoposti"].strip
     email = nil if email == ""
     email
   end
-  
+
   def rakettikortillinen?
     ["R1", "R2", "RM"].include? self["rakettistatus"]
   end
-  
+
   # True jos on joku maksanut kyseisen vuoden jäsenmaksun.
   def maksanut?(year)
     self["#{year}:maksanut"] != ""
   end
-  
+
   # True jos on joku maksanut kyseisen vuoden jäsenmaksun.
   def laskutettu?(year)
     self["#{year}:laskutettu"] != ""
   end
-  
+
   # True jos henkilön pitäisi maksaa kyseisen vuoden jäsenmaksu (eli on liittynyt
   # ennen ko. vuoden 1.10.)
   def maksaa?(year)
@@ -160,5 +160,3 @@ class User
   end
 
 end
-
-
