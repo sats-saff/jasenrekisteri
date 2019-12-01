@@ -5,41 +5,6 @@ require "rubygems"
 require "google_drive"
 require 'pp'
 
-ACCESS_TOKEN_FILE = 'access-token.txt'
-
-def get_access_token
-  begin
-    # Read cached access token + test access token for validity
-    access_token = File.read(ACCESS_TOKEN_FILE)
-    session = GoogleDrive.login_with_oauth(access_token)
-    session.spreadsheet_by_key(DOCUMENT_ID)
-  rescue
-
-    # Authorizes with OAuth and gets an access token.
-    client = Google::APIClient.new
-    auth = client.authorization
-    auth.client_id = CLIENT_ID
-    auth.client_secret = CLIENT_SECRET
-    auth.scope = [
-      "https://www.googleapis.com/auth/drive",
-      "https://spreadsheets.google.com/feeds/"
-    ]
-    auth.redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
-    print("1. Open this page:\n%s\n\n" % auth.authorization_uri)
-    print("2. Enter the authorization code shown in the page: ")
-    auth.code = $stdin.gets.strip
-    auth.fetch_access_token!
-    access_token = auth.access_token
-
-    File.open(ACCESS_TOKEN_FILE, 'w') do |file|
-      file.write(access_token)
-    end
-  end
-  return access_token
-end
-
-CLIENT_ACCESS_TOKEN = get_access_token
-
 
 # Column name for user ID
 USER_ID_COLUMN = "jasennro"
@@ -62,8 +27,7 @@ class UserDatabase
     @document_id = document_id || ENV['DOCUMENT_ID'] || DOCUMENT_ID
 
     # Logs in.
-    @session = GoogleDrive.login_with_oauth(access_token || ENV['ACCESS_TOKEN'] || CLIENT_ACCESS_TOKEN)
-
+    @session = GoogleDrive::Session.from_config("config.json")
 
 
     # Get first worksheet of document
