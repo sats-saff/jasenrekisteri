@@ -7,13 +7,13 @@
         box-sizing: border-box;
       }
 
-      @page { 
+      @page {
         /*
           A4 = 210 x 297 mm
           A5 = 210 x 148 mm
           C5 = 229 x 162 mm  (19 x 14 mm ylimääräistä)
         */
-        
+
         size: A4 portrait;
         margin: 0;
         padding: 15mm;
@@ -46,7 +46,7 @@
       .page + .page {
         page-break-before: always;
       }
-      
+
       /* Ohjeistus: http://www.posti.fi/liitteet-yrityksille/ohjeet/konelajiteltavien-suunnitteluopas.pdf */
       /*
        * C5-isoikkunakuori jossa A4 sisällä:
@@ -164,7 +164,7 @@
       .note {
         font-size: smaller;
       }
-      
+
     </style>
   </head>
   <body>
@@ -202,10 +202,9 @@
 	    <td><%= @user[:laskupv] %></td>
 	  </tr>
 	  <tr>
-	    <td>Laskuttaja</td>
+	    <td>Lisätiedot</td>
 	    <td>
 	      Sampo Juustila<br>
-	      Sihteeri<br>
 	      sampo.juustila@iki.fi<br>
 	      040-8205291
 	    </td>
@@ -216,20 +215,20 @@
       <div class="content">
 	<p>Tässä on Suomen avaruustutkimusseura ry:n vuoden <%= @user[:jmaksu_vuosi] %>
 	jäsenmaksulasku.  <% if @user[:edellisvuosi_maksamatta] %>Tietojemme mukaan myös edellisvuoden
-	jäsenmaksusi on maksamatta.<% end %>  Tarkista samalla yhteystietosi.  Ilmoita muuttuneet
-	yhteystiedot sihteerille.</p>
-	
+	jäsenmaksusi on maksamatta.<% end %>  Tarkista samalla yhteystietosi ja ilmoita mahdollisista
+  muutoksista.</p>
+
 	<% if !@user[:email] %>
 	<p><strong>Ole hyvä ja ilmoita sähköpostiosoitteesi
-	sihteerille (sampo.juustila@iki.fi)</strong> mikäli sinulla on sellainen.
+	sampo.juustila@iki.fi</strong> mikäli sinulla on sellainen.
 	Tämä vähentää johtokunnan työtä ja seuran postituskustannuksia.</p>
 	<% end %>
 
 	<p>Jos olet mielestäsi jo maksanut tämän vuoden
 	jäsenmaksun tai laskussa on muuta epäselvyyttä, ole hyvä ja
-	ota yhteyttä sihteeriin.</p>
-	
-	
+	ota yhteyttä.</p>
+
+
 	<table class="lasku">
 	  <caption>Jäsenyystiedot</caption>
 	  <tr>
@@ -250,7 +249,7 @@
 	    <td><%= @user[:jasenluokka] %></td>
 	  </tr>
 	</table>
-	
+
 	<table class="lasku">
 	  <caption>Jäsenmaksulasku</caption>
 	  <% for @maksu in @user[:laskutettava] %>
@@ -264,7 +263,7 @@
 	    <td><b><%= @user[:laskutettava_yhteensa] %> €</b></td>
 	  </tr>
 	</table>
-	
+
 	<table class="lasku">
 	  <tr>
 	    <th>Saaja:</th>
@@ -301,7 +300,7 @@
 	     http://www.sats-saff.fi/
 	  </td>
 	  <td>
-	    Sihteeri:<br>
+	    Lisätiedot:<br>
 	    Sampo Juustila<br>
 	    sampo.juustila@iki.fi<br>
 	    040-8205291
@@ -316,4 +315,3 @@
 
   </body>
 </html>
-
