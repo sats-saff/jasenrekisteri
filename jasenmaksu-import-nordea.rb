@@ -30,7 +30,7 @@ $db = UserDatabase.new
 
 def process_payment(summa, viite, maksaja, pvm, viesti)
   viite = viite.gsub(" ", "")
-  if viite =~ /^(?<jasennro>[0-9]{5})(?<vuosi>201[4-9])[0-9]$/
+  if viite =~ /^(?<jasennro>[0-9]{5})(?<vuosi>20[123][0-9])[0-9]$/
     jasennro = $~[:jasennro]
     vuosi = $~[:vuosi]
     user = $db.users.find { |u| u["jasennro"] == jasennro }
